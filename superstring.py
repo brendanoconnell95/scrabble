@@ -1,7 +1,6 @@
 import random
+import datetime
 from string import ascii_lowercase
-
-TRIALS = 10
 
 class Tile: 
 	def __init__(self, letter): 
@@ -148,13 +147,26 @@ scores = []
 # score = computeScore(str)
 # print(score, str)
 
-for i in range(TRIALS): 
-	str =  bag.randomSuperString()
-	score = computeScore(str)
-	scores.append((score, str))
+high_score = (0, "")
+output_file = open("scores.txt", "w")
 
-scores.sort(reverse=True, key=returnScore)
-for i in range(5): 
-	print(scores[i])
+try: 
+	while True: 
+		sstr =  bag.randomSuperString()
+		score = computeScore(sstr)
+		scores.append((score, sstr))
+		if score > high_score[0]: 
+			high_score = (score, sstr)
+		
+		if datetime.datetime.now().time().minute % 5 == 0: 
+			output_file.write(str(high_score[0])+": "+high_score[1])
+
+except KeyboardInterrupt: 
+	print("Stopping...")
+	scores.sort(reverse=True, key=returnScore)
+	print("Leaderboard:")
+	for i in range(5): 
+		print(scores[i])
+	output_file.write(str(high_score[0])+": "+high_score[1])
 
 
