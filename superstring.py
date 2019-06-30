@@ -1,6 +1,8 @@
 import random
 from string import ascii_lowercase
 
+TRIALS = 1000
+
 class Tile: 
 	def __init__(self, letter): 
 		self.letter = letter
@@ -142,7 +144,7 @@ bag = Bag()
 scores = []
 
 
-for i in range(3): 
+for i in range(TRIALS): 
 	str =  bag.randomSuperString()
 	score = computeScore(str)
 	scores.append((score, str))
