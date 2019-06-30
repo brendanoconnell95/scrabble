@@ -157,7 +157,7 @@ try:
 		if score > high_score[0]: 
 			high_score = (score, sstr)
 		
-		if len(scores) % 10 == 0: 
+		if len(scores) % 1000 == 0: 
 			output_file.write(str(high_score[0])+": "+high_score[1]+"\n")
 
 except KeyboardInterrupt: 
