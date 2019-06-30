@@ -1,5 +1,4 @@
 import random
-import datetime
 from string import ascii_lowercase
 
 class Tile: 
@@ -158,8 +157,8 @@ try:
 		if score > high_score[0]: 
 			high_score = (score, sstr)
 		
-		if datetime.datetime.now().time().minute % 5 == 0: 
-			output_file.write(str(high_score[0])+": "+high_score[1])
+		if len(scores) % 10 == 0: 
+			output_file.write(str(high_score[0])+": "+high_score[1]+"\n")
 
 except KeyboardInterrupt: 
 	print("Stopping...")
@@ -167,6 +166,6 @@ except KeyboardInterrupt:
 	print("Leaderboard:")
 	for i in range(5): 
 		print(scores[i])
-	output_file.write(str(high_score[0])+": "+high_score[1])
+	output_file.write(str(high_score[0])+": "+high_score[1]+"\n")
 
 
