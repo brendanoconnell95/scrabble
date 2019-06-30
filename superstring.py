@@ -1,7 +1,7 @@
 import random
 from string import ascii_lowercase
 
-TRIALS = 1000
+TRIALS = 10
 
 class Tile: 
 	def __init__(self, letter): 
@@ -121,15 +121,16 @@ def computeScore(word):
 				for tile in word.tiles:
 					score += tile.points
 		else: #word has a blank tile
-			base = word.string[:-1] #remove the blank
+			blank_used = False
 			for c in ascii_lowercase: #add each letter of the alphabet and see if it is a word
-				tmp = base + c
-				if tmp.lower() in d and tmp.lower() not in scored_words: 
+				tmp = word.string.replace("?",c)
+				if tmp.lower() in d and tmp.lower() not in scored_words and not blank_used: 
 					scored_words.append(tmp.lower())
-				for tile in word.tiles:
-					score += tile.points
+					blank_used = True
+					for tile in word.tiles:
+						score += tile.points
 			
-	#print(scored_words)		
+	print(scored_words)		
 	return score
 	
 def returnScore(tuple):
@@ -143,14 +144,17 @@ d = set(dictionary)
 bag = Bag()
 scores = []
 
+str = "HER?OS"
+score = computeScore(str)
+print(score, str)
 
-for i in range(TRIALS): 
-	str =  bag.randomSuperString()
-	score = computeScore(str)
-	scores.append((score, str))
+# for i in range(TRIALS): 
+	# str =  bag.randomSuperString()
+	# score = computeScore(str)
+	# scores.append((score, str))
 
-scores.sort(reverse=True, key=returnScore)
-for elem in scores: 
-	print(elem)
+# scores.sort(reverse=True, key=returnScore)
+# for elem in scores: 
+	# print(elem)
 
 
