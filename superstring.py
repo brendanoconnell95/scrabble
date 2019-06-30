@@ -130,7 +130,7 @@ def computeScore(word):
 					for tile in word.tiles:
 						score += tile.points
 			
-	print(scored_words)		
+	#print(scored_words)		
 	return score
 	
 def returnScore(tuple):
@@ -144,17 +144,17 @@ d = set(dictionary)
 bag = Bag()
 scores = []
 
-str = "HER?OS"
-score = computeScore(str)
-print(score, str)
+# str = "HER?OS"
+# score = computeScore(str)
+# print(score, str)
 
-# for i in range(TRIALS): 
-	# str =  bag.randomSuperString()
-	# score = computeScore(str)
-	# scores.append((score, str))
+for i in range(TRIALS): 
+	str =  bag.randomSuperString()
+	score = computeScore(str)
+	scores.append((score, str))
 
-# scores.sort(reverse=True, key=returnScore)
-# for elem in scores: 
-	# print(elem)
+scores.sort(reverse=True, key=returnScore)
+for i in range(5): 
+	print(scores[i])
 
 
