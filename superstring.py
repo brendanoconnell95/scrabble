@@ -38,70 +38,96 @@ class Word:
 			
 class Bag: 
 	def __init__(self): 
+		self.tiles = []
 		self.letters = []
+		
 		for i in range(12): 
-			self.letters.append(Tile('E'))
+			self.tiles.append(Tile('E'))
 		
 		for i in range(9): 
-			self.letters.append(Tile('A'))
-			self.letters.append(Tile('I'))
+			self.tiles.append(Tile('A'))
+			self.tiles.append(Tile('I'))
 			
 		for i in range(8): 
-			self.letters.append(Tile('O'))
+			self.tiles.append(Tile('O'))
 		
 		for i in range(6): 
-			self.letters.append(Tile('N'))
-			self.letters.append(Tile('R'))
-			self.letters.append(Tile('T'))
+			self.tiles.append(Tile('N'))
+			self.tiles.append(Tile('R'))
+			self.tiles.append(Tile('T'))
 			
 		for i in range(4): 
-			self.letters.append(Tile('L'))
-			self.letters.append(Tile('S'))
-			self.letters.append(Tile('U'))
-			self.letters.append(Tile('D'))
+			self.tiles.append(Tile('L'))
+			self.tiles.append(Tile('S'))
+			self.tiles.append(Tile('U'))
+			self.tiles.append(Tile('D'))
 			
 		for i in range(2): 
-			self.letters.append(Tile('G'))
-			self.letters.append(Tile('B'))
-			self.letters.append(Tile('C'))
-			self.letters.append(Tile('M'))
-			self.letters.append(Tile('P'))
-			self.letters.append(Tile('F'))
-			self.letters.append(Tile('H'))
-			self.letters.append(Tile('V'))
-			self.letters.append(Tile('W'))
-			self.letters.append(Tile('Y'))
-			self.letters.append(Tile('?'))
+			self.tiles.append(Tile('G'))
+			self.tiles.append(Tile('B'))
+			self.tiles.append(Tile('C'))
+			self.tiles.append(Tile('M'))
+			self.tiles.append(Tile('P'))
+			self.tiles.append(Tile('F'))
+			self.tiles.append(Tile('H'))
+			self.tiles.append(Tile('V'))
+			self.tiles.append(Tile('W'))
+			self.tiles.append(Tile('Y'))
+			self.tiles.append(Tile('?'))
 			
-		self.letters.append(Tile('G'))
-		self.letters.append(Tile('K'))
-		self.letters.append(Tile('J'))
-		self.letters.append(Tile('X'))
-		self.letters.append(Tile('Q'))
-		self.letters.append(Tile('Z'))
+		self.tiles.append(Tile('G'))
+		self.tiles.append(Tile('K'))
+		self.tiles.append(Tile('J'))
+		self.tiles.append(Tile('X'))
+		self.tiles.append(Tile('Q'))
+		self.tiles.append(Tile('Z'))
+		
+		for tile in self.tiles: 
+			self.letters.append(tile.letter)
 	
 	def printBag(self): 
-		for tile in self.letters: 
+		for tile in self.tiles: 
 			tile.printTile()
 			
 	def shuffleLetters(self): 
-		random.shuffle(self.letters)
+		random.shuffle(self.tiles)
 	
 	def randomSuperString(self): 
 		self.shuffleLetters()
 		superstring = ""
-		for tile in self.letters: 
+		for tile in self.tiles: 
 			superstring += tile.letter
 		return superstring
 	
 	def removeLetters(self, word): 
+		#only remove letters once it is determined the word can be made
+		good_letters = []
+		tmp = self.letters[:]
+		
 		for char in word: 
-			for tile in self.letters: 
-				if tile.letter == char.upper(): 
-					self.letters.remove(tile)
-					print("removed " + tile.letter)
-					break
-					
+			try: 
+				tmp.remove(char.upper())
+				good_letters.append(char.upper())
+			except: 
+				#print("no "+ char + "'s left")
+				break
+		
+		
+		if len(good_letters) == len(word): 
+			for c in good_letters: 
+				self.letters.remove(c)
+			
+			#remake self.tiles without the removed letters
+			self.tiles = []
+		
+			for char in self.letters: 
+				self.tiles.append(Tile(char))
+				
+			return True
+		else: 
+			return False
+		
+			
 def get_all_substrings(string):
   length = len(string)
   alist = []
@@ -136,7 +162,7 @@ def computeScore(word):
 					for tile in word.tiles:
 						score += tile.points
 			
-	#print(scored_words)		
+	print(scored_words)		
 	return score
 	
 def makeString(bag):
@@ -144,12 +170,22 @@ def makeString(bag):
 	superstring = ""
 	
 	dict_scores.sort(reverse=True, key=sortScore)
-
-	starting_word = dict_scores[0][1]
-	bag.removeLetters(starting_word)
-	print(superstring)
+	
+	for i in range(len(dict_scores)): 
+		word = dict_scores[i][1]
+		if len(bag.letters) == 0: 
+			break
+		
+		if bag.removeLetters(word): 
+			superstring += word
+			print("added", word)
+		else: 
+			pass
+			
 	score = computeScore(superstring)
-	print(score)
+	print(score, superstring)
+	print(len(superstring))
+	print(bag.letters)
 
 def sortScore(tuple):
 	return tuple[0]
