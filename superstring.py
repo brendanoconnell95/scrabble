@@ -162,7 +162,7 @@ def computeScore(word):
 					for tile in word.tiles:
 						score += tile.points
 			
-	print(scored_words)		
+	#print(scored_words)		
 	return score
 	
 def makeString(bag):
@@ -183,9 +183,9 @@ def makeString(bag):
 			pass
 			
 	score = computeScore(superstring)
-	print(score, superstring)
-	print(len(superstring))
-	print(bag.letters)
+	# print(score, superstring)
+	# print(len(superstring))
+	# print(bag.letters)
 
 def sortScore(tuple):
 	return tuple[0]
