@@ -38,62 +38,96 @@ class Word:
 			
 class Bag: 
 	def __init__(self): 
+		self.tiles = []
 		self.letters = []
+		
 		for i in range(12): 
-			self.letters.append(Tile('E'))
+			self.tiles.append(Tile('E'))
 		
 		for i in range(9): 
-			self.letters.append(Tile('A'))
-			self.letters.append(Tile('I'))
+			self.tiles.append(Tile('A'))
+			self.tiles.append(Tile('I'))
 			
 		for i in range(8): 
-			self.letters.append(Tile('O'))
+			self.tiles.append(Tile('O'))
 		
 		for i in range(6): 
-			self.letters.append(Tile('N'))
-			self.letters.append(Tile('R'))
-			self.letters.append(Tile('T'))
+			self.tiles.append(Tile('N'))
+			self.tiles.append(Tile('R'))
+			self.tiles.append(Tile('T'))
 			
 		for i in range(4): 
-			self.letters.append(Tile('L'))
-			self.letters.append(Tile('S'))
-			self.letters.append(Tile('U'))
-			self.letters.append(Tile('D'))
+			self.tiles.append(Tile('L'))
+			self.tiles.append(Tile('S'))
+			self.tiles.append(Tile('U'))
+			self.tiles.append(Tile('D'))
 			
 		for i in range(2): 
-			self.letters.append(Tile('G'))
-			self.letters.append(Tile('B'))
-			self.letters.append(Tile('C'))
-			self.letters.append(Tile('M'))
-			self.letters.append(Tile('P'))
-			self.letters.append(Tile('F'))
-			self.letters.append(Tile('H'))
-			self.letters.append(Tile('V'))
-			self.letters.append(Tile('W'))
-			self.letters.append(Tile('Y'))
-			self.letters.append(Tile('?'))
+			self.tiles.append(Tile('G'))
+			self.tiles.append(Tile('B'))
+			self.tiles.append(Tile('C'))
+			self.tiles.append(Tile('M'))
+			self.tiles.append(Tile('P'))
+			self.tiles.append(Tile('F'))
+			self.tiles.append(Tile('H'))
+			self.tiles.append(Tile('V'))
+			self.tiles.append(Tile('W'))
+			self.tiles.append(Tile('Y'))
+			self.tiles.append(Tile('?'))
 			
-		self.letters.append(Tile('G'))
-		self.letters.append(Tile('K'))
-		self.letters.append(Tile('J'))
-		self.letters.append(Tile('X'))
-		self.letters.append(Tile('Q'))
-		self.letters.append(Tile('Z'))
+		self.tiles.append(Tile('G'))
+		self.tiles.append(Tile('K'))
+		self.tiles.append(Tile('J'))
+		self.tiles.append(Tile('X'))
+		self.tiles.append(Tile('Q'))
+		self.tiles.append(Tile('Z'))
+		
+		for tile in self.tiles: 
+			self.letters.append(tile.letter)
 	
 	def printBag(self): 
-		for tile in self.letters: 
+		for tile in self.tiles: 
 			tile.printTile()
 			
 	def shuffleLetters(self): 
-		random.shuffle(self.letters)
+		random.shuffle(self.tiles)
 	
 	def randomSuperString(self): 
 		self.shuffleLetters()
 		superstring = ""
-		for tile in self.letters: 
+		for tile in self.tiles: 
 			superstring += tile.letter
 		return superstring
-
+	
+	def removeLetters(self, word): 
+		#only remove letters once it is determined the word can be made
+		good_letters = []
+		tmp = self.letters[:]
+		
+		for char in word: 
+			try: 
+				tmp.remove(char.upper())
+				good_letters.append(char.upper())
+			except: 
+				#print("no "+ char + "'s left")
+				break
+		
+		
+		if len(good_letters) == len(word): 
+			for c in good_letters: 
+				self.letters.remove(c)
+			
+			#remake self.tiles without the removed letters
+			self.tiles = []
+		
+			for char in self.letters: 
+				self.tiles.append(Tile(char))
+				
+			return True
+		else: 
+			return False
+		
+			
 def get_all_substrings(string):
   length = len(string)
   alist = []
@@ -131,41 +165,53 @@ def computeScore(word):
 	#print(scored_words)		
 	return score
 	
-def returnScore(tuple):
-	return tuple[0]
+def makeString(bag):
+	dict_scores = scored_dict
+	superstring = ""
 	
+	dict_scores.sort(reverse=True, key=sortScore)
+	
+	for i in range(len(dict_scores)): 
+		word = dict_scores[i][1]
+		if len(bag.letters) == 0: 
+			break
+		
+		if bag.removeLetters(word): 
+			superstring += word
+			print("added", word)
+		else: 
+			pass
+			
+	score = computeScore(superstring)
+	# print(score, superstring)
+	# print(len(superstring))
+	# print(bag.letters)
+
+def sortScore(tuple):
+	return tuple[0]
+
+def sortWord(tuple): 
+	return tuple[1]
 	
 f = open('scrabble_dict.txt', 'r')
 dictionary = f.read().splitlines()
 d = set(dictionary)
 
+sd = open('scored_dict.txt', 'r')
+scored_dict = []
+
+for i in sd.readlines(): 
+	tmp = i.split()
+	scored_dict.append((int(tmp[1]), tmp[0]))
+
+	
 bag = Bag()
 scores = []
+	
+makeString(bag)
 
-# str = "HER?OS"
-# score = computeScore(str)
-# print(score, str)
 
-high_score = (0, "")
-output_file = open("scores.txt", "w")
 
-try: 
-	while True: 
-		sstr =  bag.randomSuperString()
-		score = computeScore(sstr)
-		scores.append((score, sstr))
-		if score > high_score[0]: 
-			high_score = (score, sstr)
-		
-		if len(scores) % 1000 == 0: 
-			output_file.write(str(high_score[0])+": "+high_score[1]+"\n")
 
-except KeyboardInterrupt: 
-	print("Stopping...")
-	scores.sort(reverse=True, key=returnScore)
-	print("Leaderboard:")
-	for i in range(5): 
-		print(scores[i])
-	output_file.write(str(high_score[0])+": "+high_score[1]+"\n")
 
 
