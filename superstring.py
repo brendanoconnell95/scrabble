@@ -93,7 +93,15 @@ class Bag:
 		for tile in self.letters: 
 			superstring += tile.letter
 		return superstring
-
+	
+	def removeLetters(self, word): 
+		for char in word: 
+			for tile in self.letters: 
+				if tile.letter == char.upper(): 
+					self.letters.remove(tile)
+					print("removed " + tile.letter)
+					break
+					
 def get_all_substrings(string):
   length = len(string)
   alist = []
@@ -131,41 +139,43 @@ def computeScore(word):
 	#print(scored_words)		
 	return score
 	
-def returnScore(tuple):
-	return tuple[0]
+def makeString(bag):
+	dict_scores = scored_dict
+	superstring = ""
 	
+	dict_scores.sort(reverse=True, key=sortScore)
+
+	starting_word = dict_scores[0][1]
+	bag.removeLetters(starting_word)
+	print(superstring)
+	score = computeScore(superstring)
+	print(score)
+
+def sortScore(tuple):
+	return tuple[0]
+
+def sortWord(tuple): 
+	return tuple[1]
 	
 f = open('scrabble_dict.txt', 'r')
 dictionary = f.read().splitlines()
 d = set(dictionary)
 
+sd = open('scored_dict.txt', 'r')
+scored_dict = []
+
+for i in sd.readlines(): 
+	tmp = i.split()
+	scored_dict.append((int(tmp[1]), tmp[0]))
+
+	
 bag = Bag()
 scores = []
+	
+makeString(bag)
 
-# str = "HER?OS"
-# score = computeScore(str)
-# print(score, str)
 
-high_score = (0, "")
-output_file = open("scores.txt", "w")
 
-try: 
-	while True: 
-		sstr =  bag.randomSuperString()
-		score = computeScore(sstr)
-		scores.append((score, sstr))
-		if score > high_score[0]: 
-			high_score = (score, sstr)
-		
-		if len(scores) % 1000 == 0: 
-			output_file.write(str(high_score[0])+": "+high_score[1]+"\n")
 
-except KeyboardInterrupt: 
-	print("Stopping...")
-	scores.sort(reverse=True, key=returnScore)
-	print("Leaderboard:")
-	for i in range(5): 
-		print(scores[i])
-	output_file.write(str(high_score[0])+": "+high_score[1]+"\n")
 
 
