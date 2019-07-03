@@ -1,4 +1,5 @@
 import random
+import itertools
 from string import ascii_lowercase
 
 class Tile: 
@@ -102,20 +103,32 @@ class Bag:
 	def removeLetters(self, word): 
 		#only remove letters once it is determined the word can be made
 		good_letters = []
+		blanks = []
 		tmp = self.letters[:]
 		
 		for char in word: 
 			try: 
 				tmp.remove(char.upper())
 				good_letters.append(char.upper())
-			except: 
-				#print("no "+ char + "'s left")
-				break
+			except:
+				#check if we can use a blank
+				if '?' in tmp: 
+					#we have a blank
+					tmp.remove('?')
+					blanks.append(char.upper())
+				else: 
+					#print("no "+ char + "'s left")
+					pass
+					break
 		
 		
-		if len(good_letters) == len(word): 
+		if len(good_letters)+len(blanks) == len(word): 
 			for c in good_letters: 
 				self.letters.remove(c)
+			
+			for b in blanks: 
+				#print(b)
+				self.letters.remove('?')
 			
 			#remake self.tiles without the removed letters
 			self.tiles = []
@@ -165,25 +178,40 @@ def computeScore(word):
 	#print(scored_words)		
 	return score
 	
-def makeString(bag):
+#makes a superstring from the letters in the bag. startWord is the number of words to skip in the list of highest value words	
+def makeString(bag, startWord):
 	dict_scores = scored_dict
 	superstring = ""
+	added_words = []
 	
 	dict_scores.sort(reverse=True, key=sortScore)
 	
-	for i in range(len(dict_scores)): 
-		word = dict_scores[i][1]
+	for i in range(len(dict_scores)):	
+		if i+startWord < len(dict_scores):
+			word = dict_scores[i+startWord][1]
+		else: 
+			break
+			
 		if len(bag.letters) == 0: 
 			break
 		
-		if bag.removeLetters(word): 
-			superstring += word
-			print("added", word)
+		if bag.removeLetters(word): #if we can make the word
+			#print("added", word)
+			added_words.append(word)
 		else: 
 			pass
-			
+	
+	for w in added_words: 
+		score1 = computeScore(superstring+w)
+		score2 = computeScore(w+superstring)
+		if score1 > score2: 
+			superstring = superstring+w
+		else: 
+			superstring = w+superstring
+	
 	score = computeScore(superstring)
-	# print(score, superstring)
+	#print(score, superstring)
+	return (score, superstring)
 	# print(len(superstring))
 	# print(bag.letters)
 
@@ -204,14 +232,15 @@ for i in sd.readlines():
 	tmp = i.split()
 	scored_dict.append((int(tmp[1]), tmp[0]))
 
-	
-bag = Bag()
 scores = []
-	
-makeString(bag)
 
+for i in range(10): 
+	tmp = Bag()
+	s = makeString(tmp, i)
+	scores.append(s)
 
+scores.sort(reverse=True, key=sortScore)
 
-
-
+for i in range(5): 
+	print(scores[i])
 
